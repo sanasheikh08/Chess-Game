@@ -5,7 +5,6 @@ CBoard::CBoard()
     for (int iRow = 0; iRow < 8; ++iRow)
         for (int iCol = 0; iCol < 8; ++iCol)
             MainGameBoard[iRow][iCol] = 0;
-
     // Black pieces
     for (int iCol = 0; iCol < 8; ++iCol)
         MainGameBoard[6][iCol] = new PawnPiece('B');
@@ -17,7 +16,6 @@ CBoard::CBoard()
     MainGameBoard[7][5] = new BishopPiece('B');
     MainGameBoard[7][6] = new KnightPiece('B');
     MainGameBoard[7][7] = new RookPiece('B');
-
     // White pieces
     for (int iCol = 0; iCol < 8; ++iCol)
         MainGameBoard[1][iCol] = new PawnPiece('W');
@@ -65,6 +63,28 @@ void CBoard::Print()
     }
     // Column labels
     cout << "      1    2    3    4    5    6    7    8\n";
+}
+// IsInCheck function definition
+bool CBoard::IsInCheck(char PieceColor)
+{
+    int iKingRow = -1, iKingCol = -1;
+    for (int iRow = 0; iRow < 8; ++iRow)
+        for (int iCol = 0; iCol < 8; ++iCol)
+            if (MainGameBoard[iRow][iCol] != nullptr &&
+                MainGameBoard[iRow][iCol]->GetColor() == PieceColor &&
+                MainGameBoard[iRow][iCol]->GetPiece() == 'K')
+            {
+                iKingRow = iRow; iKingCol = iCol;
+            }
+    // King not found 
+    if (iKingRow == -1) return false;
+    for (int iRow = 0; iRow < 8; ++iRow)
+        for (int iCol = 0; iCol < 8; ++iCol)
+            if (MainGameBoard[iRow][iCol] != nullptr &&
+                MainGameBoard[iRow][iCol]->GetColor() != PieceColor &&
+                MainGameBoard[iRow][iCol]->IsLegalMove(iRow, iCol, iKingRow, iKingCol, MainGameBoard))
+                return true;
+    return false;
 }
 
 
