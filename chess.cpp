@@ -30,4 +30,13 @@ CBoard::CBoard()
     MainGameBoard[0][6] = new KnightPiece('W');
     MainGameBoard[0][7] = new RookPiece('W');
 }
+//CBoard Destructor
+CBoard::~CBoard()
+{
+    for (int iRow = 0; iRow < 8; ++iRow)
+        for (int iCol = 0; iCol < 8; ++iCol) {
+            delete MainGameBoard[iRow][iCol];
+            MainGameBoard[iRow][iCol] = 0;
+        }
+}
 
