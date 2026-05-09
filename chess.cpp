@@ -39,4 +39,32 @@ CBoard::~CBoard()
             MainGameBoard[iRow][iCol] = 0;
         }
 }
+//CBoard Print Function
+void CBoard::Print()
+{
+    // Top border
+    cout << "   ===========================================\n";
+    for (int iSquareRow = 7; iSquareRow >= 0; --iSquareRow) {
+        // Middle row: rank label + pieces/shading
+        cout << " " << (iSquareRow + 1) << " |";
+        for (int iSquareCol = 0; iSquareCol < 8; ++iSquareCol) {
+            GamePiece* piece = MainGameBoard[iSquareRow][iSquareCol];
+            bool isDark = (iSquareRow + iSquareCol) % 2 == 0;
+            if (piece != nullptr) {
+                // e.g. " WP " or " BP "
+                cout << " " << piece->GetColor() << piece->GetPiece() << " |";
+            }
+            else {
+                // dark square = shaded with ::::, light = blank
+                cout << (isDark ? "::::" : "    ") << "|";
+            }
+        }
+        cout << "\n";
+        // Row separator
+        cout << "   ===========================================\n";
+    }
+    // Column labels
+    cout << "      1    2    3    4    5    6    7    8\n";
+}
+
 
