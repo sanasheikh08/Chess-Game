@@ -86,5 +86,25 @@ bool CBoard::IsInCheck(char PieceColor)
                 return true;
     return false;
 }
+//CanMove function definition
+bool CBoard::CanMove(char PieceColor)
+{
+    for (int iRow = 0; iRow < 8; ++iRow)
+        for (int iCol = 0; iCol < 8; ++iCol)
+            if (MainGameBoard[iRow][iCol] != 0 && MainGameBoard[iRow][iCol]->GetColor() == PieceColor)
+                for (int iMoveRow = 0; iMoveRow < 8; ++iMoveRow)
+                    for (int iMoveCol = 0; iMoveCol < 8; ++iMoveCol)
+                        if (MainGameBoard[iRow][iCol]->IsLegalMove(iRow, iCol, iMoveRow, iMoveCol, MainGameBoard)) {
+                            GamePiece* qpTemp = MainGameBoard[iMoveRow][iMoveCol];
+                            MainGameBoard[iMoveRow][iMoveCol] = MainGameBoard[iRow][iCol];
+                            MainGameBoard[iRow][iCol] = 0;
+                            bool bCanMove = !IsInCheck(PieceColor);
+                            MainGameBoard[iRow][iCol] = MainGameBoard[iMoveRow][iMoveCol];
+                            MainGameBoard[iMoveRow][iMoveCol] = qpTemp;
+                            if (bCanMove) return true;
+                        }
+    return false;
+}
+
 
 
