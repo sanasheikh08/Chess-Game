@@ -1,3 +1,19 @@
+//Member 1 code Part
+#include "chess.h"
+using namespace std;
+
+// =============================================
+//  GamePiece
+// =============================================
+
+bool GamePiece::IsLegalMove(int iSrcRow, int iSrcCol, int iDestRow, int iDestCol, GamePiece* GameBoard[8][8])
+{
+    GamePiece* qpDest = GameBoard[iDestRow][iDestCol];
+    if ((qpDest == 0) || (mPieceColor != qpDest->GetColor())) {
+        return AreSquaresLegal(iSrcRow, iSrcCol, iDestRow, iDestCol, GameBoard);
+    }
+    return false;
+}
 //Member 2 code Part 
 //CBoard class constructor definition
 CBoard::CBoard()
