@@ -253,6 +253,74 @@ bool CBoard::CanMove(char PieceColor)
                         }
     return false;
 }
+//Member 3 code part 
+// =============================================
+//  ChessBoard
+// =============================================
+
+void ChessBoard::ShowWelcomeScreen()
+{
+    system("cls");
+
+    cout << "\n";
+    cout << "   ===========================================\n";
+    cout << "            C++ CONSOLE CHESS GAME                    \n";
+    cout << "   ===========================================\n";
+
+    cout << "\n  ==== PIECES ===========================================\n\n";
+    cout << "   WP / BP  =  Pawn       WN / BN  =  Knight\n";
+    cout << "   WB / BB  =  Bishop     WR / BR  =  Rook\n";
+    cout << "   WQ / BQ  =  Queen      WK / BK  =  King\n";
+    cout << "   (W = White, B = Black)\n";
+
+    cout << "\n  ==== HOW TO ENTER A MOVE ===========================================\n\n";
+    cout << "   The board uses rows 1-8 (bottom to top) and\n";
+    cout << "   columns 1-8 (left to right).\n\n";
+    cout << "   You will be asked for two numbers:\n";
+    cout << "     From (RC) : the square your piece is ON\n";
+    cout << "     To   (RC) : the square you want to MOVE TO\n\n";
+    cout << "   Type the ROW digit followed by the COLUMN digit as one\n";
+    cout << "   two-digit number.  Examples:\n\n";
+    cout << "     Row 1, Col 3  ->  type  13\n";
+    cout << "     Row 2, Col 5  ->  type  25\n";
+    cout << "     Row 7, Col 7  ->  type  77\n\n";
+    cout << "   White always starts at rows 1-2.  Black starts at rows 7-8.\n";
+
+    cout << "\n ==== PIECE MOVEMENT RULES ===========================================\n\n";
+    cout << "   Pawn   : moves 1 square forward; captures 1 square diagonally\n";
+    cout << "   Knight : moves in an L-shape (2 squares + 1 square, any dir)\n";
+    cout << "            the ONLY piece that can jump over other pieces\n";
+    cout << "   Bishop : moves any number of squares diagonally\n";
+    cout << "   Rook   : moves any number of squares horizontally or vertically\n";
+    cout << "   Queen  : moves like a Bishop AND a Rook combined\n";
+    cout << "   King   : moves exactly 1 square in any direction\n";
+
+    cout << "\n ==== GAME RULES ===========================================\n\n";
+    cout << "   * You CANNOT move into check (leaving your own King threatened).\n";
+    cout << "   * If your King is in CHECK you must escape it on your next move.\n";
+    cout << "   * CHECKMATE : King is in check and has no legal escape -> you lose.\n";
+    cout << "   * STALEMATE : No legal moves but King is NOT in check -> draw.\n";
+    cout << "   * Capture an opponent piece by moving onto its square.\n";
+    cout << "   * White moves first.\n";
+    cout << "   * To RESIGN type 0 at the From prompt.\n";
+
+    cout << "\n   ==== BOARD LEGEND ===========================================\n\n";
+    cout << "   :::: = dark square (empty)    (blank) = light square (empty)\n";
+
+    cout << "\n ===============================================\n";
+    cout << "  Press ENTER to start the game...";
+    cin.ignore(10000, '\n');
+    cin.get();
+}
+
+void ChessBoard::Start()
+{
+    ShowWelcomeScreen();
+    do {
+        if (!GetNextMove(mqGameBoard.MainGameBoard)) break;
+        AlternateTurn();
+    } while (!IsGameOver());
+}
 
 
 
