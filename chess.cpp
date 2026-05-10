@@ -45,6 +45,41 @@ bool PawnPiece::AreSquaresLegal(int iSrcRow, int iSrcCol, int iDestRow, int iDes
     }
     return false;
 }
+// =============================================
+//  KnightPiece
+// =============================================
+
+bool KnightPiece::AreSquaresLegal(int iSrcRow, int iSrcCol, int iDestRow, int iDestCol, GamePiece* /*GameBoard*/[8][8])
+{
+    if ((iSrcCol == iDestCol + 1) || (iSrcCol == iDestCol - 1)) {
+        if ((iSrcRow == iDestRow + 2) || (iSrcRow == iDestRow - 2)) return true;
+    }
+    if ((iSrcCol == iDestCol + 2) || (iSrcCol == iDestCol - 2)) {
+        if ((iSrcRow == iDestRow + 1) || (iSrcRow == iDestRow - 1)) return true;
+    }
+    return false;
+}
+
+// =============================================
+//  BishopPiece
+// =============================================
+
+bool BishopPiece::AreSquaresLegal(int iSrcRow, int iSrcCol, int iDestRow, int iDestCol, GamePiece* GameBoard[8][8])
+{
+    if ((iDestCol - iSrcCol == iDestRow - iSrcRow) || (iDestCol - iSrcCol == iSrcRow - iDestRow)) {
+        int iRowOffset = (iDestRow - iSrcRow > 0) ? 1 : -1;
+        int iColOffset = (iDestCol - iSrcCol > 0) ? 1 : -1;
+        for (int iCheckRow = iSrcRow + iRowOffset, iCheckCol = iSrcCol + iColOffset;
+            iCheckRow != iDestRow;
+            iCheckRow += iRowOffset, iCheckCol += iColOffset)
+        {
+            if (GameBoard[iCheckRow][iCheckCol] != 0) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 //Member 2 code Part 
 //CBoard class constructor definition
 CBoard::CBoard()
