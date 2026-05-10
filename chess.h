@@ -94,4 +94,20 @@ public:
     bool CanMove(char PieceColor);
     GamePiece* MainGameBoard[8][8];
 };
-
+//Member 3 
+class ChessBoard
+{
+public:
+    ChessBoard() : mcPlayerTurn('W'), mMoveNumber(1) { mLastMoveMsg[0] = '\0'; }
+    ~ChessBoard() {}
+    void Start();
+    void ShowWelcomeScreen();
+    bool GetNextMove(GamePiece* GameBoard[8][8]);
+    void AlternateTurn();
+    bool IsGameOver();
+private:
+    CBoard mqGameBoard;
+    char mcPlayerTurn;
+    int  mMoveNumber;
+    char mLastMoveMsg[64];  // shown on next screen refresh
+};
