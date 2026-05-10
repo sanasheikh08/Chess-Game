@@ -321,6 +321,43 @@ void ChessBoard::Start()
         AlternateTurn();
     } while (!IsGameOver());
 }
+// Helper: read a valid integer from cin; returns false on stream failure
+static bool readInt(int& out) {
+    if (!(cin >> out)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        return false;
+    }
+    return true;
+}
+
+// =============================================
+//  Pawn Promotion 
+// =============================================
+
+static GamePiece* PromotePawn(char color)
+{
+    cout << "\n  ** PAWN PROMOTION! **\n";
+    cout << "  Choose a piece to promote to:\n";
+    cout << "    Q = Queen\n";
+    cout << "    R = Rook\n";
+    cout << "    B = Bishop\n";
+    cout << "    N = Knight\n";
+    cout << "  Your choice: ";
+
+    char choice = ' ';
+    while (true) {
+        cin >> choice;
+        cin.ignore(10000, '\n');
+        choice = toupper(choice);
+        if (choice == 'Q') return new QueenPiece(color);
+        if (choice == 'R') return new RookPiece(color);
+        if (choice == 'B') return new BishopPiece(color);
+        if (choice == 'N') return new KnightPiece(color);
+        cout << "  [!] Invalid choice. Enter Q, R, B, or N: ";
+    }
+}
+
 
 
 
