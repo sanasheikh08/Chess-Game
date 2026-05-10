@@ -357,6 +357,174 @@ static GamePiece* PromotePawn(char color)
         cout << "  [!] Invalid choice. Enter Q, R, B, or N: ";
     }
 }
+bool ChessBoard::GetNextMove(GamePiece* GameBoard[8][8])
+{
+    bool bValidMove = false;
+
+    do {
+        system("cls");
+
+        // ?? Header =============================================?
+        cout << "\n";
+        cout << "  ===============================================\n";
+        cout << "             C++ CONSOLE CHESS GAME             \n";
+        cout << "   ===============================================\n\n";
+
+        // Move number & current player
+        const char* playerName = (mcPlayerTurn == 'W') ? "WHITE" : "BLACK";
+        cout << "  Move #" << mMoveNumber
+            << "      " << playerName << " to play";
+
+        // Warn if in check
+        if (mqGameBoard.IsInCheck(mcPlayerTurn))
+            cout << "   <<  CHECK! >>";
+        cout << "\n\n";
+
+        // Show last move if any
+        if (mLastMoveMsg[0] != '\0')
+            cout << "  Last move: " << mLastMoveMsg << "\n\n";
+
+        // == Legend (compact reminder) ==========================
+        cout << "  Pieces: WP/BP=Pawn  WN/BN=Knight  WB/BB=Bishop\n";
+        cout << "          WR/BR=Rook  WQ/BQ=Queen   WK/BK=King\n";
+        cout << "  Input:  type ROW then COL as one number  (e.g. row 2 col 5 = 25)\n";
+        cout << "  Resign: type 0 at the From prompt\n\n";
+
+        // ?? Board =============================================???
+        mqGameBoard.Print();
+        cout << "\n";
+
+        // ?? Input =============================================???
+        cout << "  From (RC): ";
+        int iStartMove = 0;
+        if (!readInt(iStartMove)) { cout << "  [!] Invalid input.\n"; continue; }
+
+        // Resign
+        if (iStartMove == 0) {
+            system("cls");
+            mqGameBoard.Print();
+            cout << "\n   ===============================================\n";
+            const char* opponent = (mcPlayerTurn == 'W') ? "BLACK" : "WHITE";
+            cout << "   " << playerName << " resigns.  " << opponent << " WINS!\n";
+            cout << "   ===============================================\n\n";
+            return false;
+        }
+
+        int iStartRow = (iStartMove / 10) - 1;
+        int iStartCol = (iStartMove % 10) - 1;
+
+        cout << "  To   (RC): ";
+        int iEndMove = 0;
+        if (!readInt(iEndMove)) { cout << "  [!] Invalid input.\n"; continue; }
+        int iEndRow = (iEndMove / 10) - 1;
+        int iEndCol = (iEndMove % 10) - 1;
+
+        // == Validate ?? Validate & execute ??????????????????????????????????? execute ===================================
+        if ((iStartRow >= 0 && iStartRow <= 7) && (iStartCol >= 0 && iStartCol <= 7) &&
+            (iEndRow >= 0 && iEndRow <= 7) && (iEndCol >= 0 && iEndCol <= 7))
+        {
+            GamePiece* qpCurrPiece = GameBoard[iStartRow][iStartCol];
+            if ((qpCurrPiece != nullptr) && (qpCurrPiece->GetColor() == mcPlayerTurn)) {
+                if (qpCurrPiece->IsLegalMove(iStartRow, iStartCol, iEndRow, iEndCol, GameBoard)) {
+                    GamePiece* qpTemp = GameBoard[iEndRow][iEndCol];
+                    GameBoard[iEndRow][iEndCol] = GameBoard[iStartRow][iStartCol];
+                    GameBoard[iStartRow][iStartCol] = nullptr;
+                    if (!mqGameBoard.IsInCheck(mcPlayerTurn)) {
+                        // Mark pawn as moved so it can no longer double-step
+                        if (qpCurrPiece->GetPiece() == 'P') {
+                            static_cast<PawnPiece*>(qpCurrPiece)->SetMoved();
+
+                            // =============================================
+                            //  PAWN PROMOTION 
+                            // =============================================
+                            bool isPromotion = (mcPlayerTurn == 'W' && iEndRow == 7) ||
+                                (mcPlayerTurn == 'B' && iEndRow == 0);
+                            if (isPromotion) {
+                                GamePiece* promoted = PromotePawn(mcPlayerTurn);
+                                delete GameBoard[iEndRow][iEndCol];
+                                GameBoard[iEndRow][iEndCol] = promoted;
+                                qpCurrPiece = promoted;
+                            }
+                        }
+                        // Build move description (e.g. "WP: 12 -> 13  (captured BP)")
+                        int idx = 0;
+                        mLastMoveMsg[idx++] = mcPlayerTurn;
+                        mLastMoveMsg[idx++] = 'P';
+                        mLastMoveMsg[idx++] = ':'; mLastMoveMsg[idx++] = ' ';
+                        mLastMoveMsg[idx++] = (char)('0' + iStartRow + 1);
+                        mLastMoveMsg[idx++] = (char)('0' + iStartCol + 1);
+                        mLastMoveMsg[idx++] = ' '; mLastMoveMsg[idx++] = '-';
+                        mLastMoveMsg[idx++] = '>'; mLastMoveMsg[idx++] = ' ';
+                        mLastMoveMsg[idx++] = (char)('0' + iEndRow + 1);
+                        mLastMoveMsg[idx++] = (char)('0' + iEndCol + 1);
+                        if (qpTemp != nullptr) {
+                            const char* cap = "  (captured ";
+                            for (int i = 0; cap[i]; ++i) mLastMoveMsg[idx++] = cap[i];
+                            mLastMoveMsg[idx++] = qpTemp->GetColor();
+                            mLastMoveMsg[idx++] = qpTemp->GetPiece();
+                            mLastMoveMsg[idx++] = ')';
+                        }
+                        mLastMoveMsg[idx] = '\0';
+                        delete qpTemp;
+                        bValidMove = true;
+                        ++mMoveNumber;
+                    }
+                    else {
+                        // Undo   move leaves king in check
+                        GameBoard[iStartRow][iStartCol] = GameBoard[iEndRow][iEndCol];
+                        GameBoard[iEndRow][iEndCol] = qpTemp;
+                        cout << "\n  [!] That move leaves your King in check!\n";
+                        cout << "      Press ENTER to try again...";
+                        cin.ignore(10000, '\n'); cin.get();
+                    }
+                }
+                else {
+                    cout << "\n  [!] Illegal move for that piece.\n";
+                    cout << "      Press ENTER to try again...";
+                    cin.ignore(10000, '\n'); cin.get();
+                }
+            }
+            else {
+                cout << "\n  [!] No " << playerName << " piece at that square.\n";
+                cout << "      Press ENTER to try again...";
+                cin.ignore(10000, '\n'); cin.get();
+            }
+        }
+        else {
+            cout << "\n  [!] Coordinates out of range (use rows/cols 1-8).\n";
+            cout << "      Press ENTER to try again...";
+            cin.ignore(10000, '\n'); cin.get();
+        }
+
+    } while (!bValidMove);
+
+    return true;
+}
+
+void ChessBoard::AlternateTurn()
+{
+    mcPlayerTurn = (mcPlayerTurn == 'W') ? 'B' : 'W';
+}
+
+bool ChessBoard::IsGameOver()
+{
+    if (!mqGameBoard.CanMove(mcPlayerTurn)) {
+        system("cls");
+        mqGameBoard.Print();
+        cout << "\n   ===============================================\n";
+        if (mqGameBoard.IsInCheck(mcPlayerTurn)) {
+            AlternateTurn();
+            const char* winner = (mcPlayerTurn == 'W') ? "WHITE" : "BLACK";
+            cout << "           CHECKMATE! " << winner << " WINS!          \n";
+        }
+        else {
+            cout << "                STALEMATE! DRAW!             \n";
+        }
+        cout << "   ===============================================\n\n";
+        return true;
+    }
+    return false;
+}
 
 
 
