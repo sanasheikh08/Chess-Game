@@ -1,3 +1,4 @@
+//Member 3
 #include "chess.h"
 
 int main()
